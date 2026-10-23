@@ -5,6 +5,8 @@ import io
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
+import app as app_module
 
 from app import create_app
 from simulator import make_packet
@@ -15,15 +17,23 @@ class TelemetryTests(unittest.TestCase):
         self.folder = tempfile.TemporaryDirectory()
         self.path = Path(self.folder.name) / "simulation.sqlite3"
         self.now = 1_800_000_000.0
+        # Keep these original telemetry scenarios independent of the team's live calibration.
+        self.settings = app_module.load_settings()
+        self.settings.update(upstream_max_mm=160, downstream_max_mm=250,
+                             high_water_mm=100, high_water_clear_mm=90,
+                             pond_high_water_mm=187.5, pond_high_water_clear_mm=156.25)
+        self.profile_patch = patch("app.load_settings", return_value=self.settings)
+        self.profile_patch.start()
         self.app = create_app(database_path=self.path, clock=lambda: self.now)
         self.app.config["TESTING"] = True
         self.client = self.app.test_client()
 
     def tearDown(self):
+        self.profile_patch.stop()
         self.folder.cleanup()
 
     def packet(self, sequence=0, scenario="normal", boot="test-boot"):
-        return make_packet(sequence, boot, sequence * 1000, scenario)
+        return make_packet(sequence, boot, sequence * 1000, scenario, settings=self.settings)
 
     def send(self, sequence=0, scenario="normal", boot="test-boot", **changes):
         payload = self.packet(sequence, scenario, boot)

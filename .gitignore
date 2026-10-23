@@ -26,3 +26,4 @@ wifi_secrets.h
 # Temporary files
 *.log
 .DS_Store
+.workflow-backups/

@@ -11,6 +11,7 @@
   <script src="{{ url_for('static', filename='monitor.js', v='20261022') }}" defer></script>
   <script src="{{ url_for('static', filename='dashboard.js', v='20261022-pond-alerts-only') }}" defer></script>
   <script src="{{ url_for('static', filename='pond.js', v='20261022-pond-alerts-only') }}" defer></script>
+  <script src="{{ url_for('static', filename='workflow-link.js', v='20261023') }}" defer></script>
 </head>
 {% macro icon(name, extra='') -%}<svg class="icon {{ extra }}" aria-hidden="true"><use href="#i-{{ name }}"></use></svg>{%- endmacro %}
 <body data-mode="{{ mode }}" data-asset="{{ settings.asset_id }}">

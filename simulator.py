@@ -10,10 +10,12 @@ import urllib.request
 import uuid
 from pathlib import Path
 
-SCENARIOS = ("normal", "high-water", "sensor-fault", "out-of-range", "stale-sample", "cycle")
+SCENARIOS = ("normal", "high-water", "pond-high", "sensor-fault", "out-of-range", "stale-sample", "cycle")
 
 
-def make_packet(sequence, boot_id, uptime_ms, scenario="normal", device_id="stormready-esp32-01"):
+def make_packet(sequence, boot_id, uptime_ms, scenario="normal", device_id="stormready-esp32-01", settings=None):
+    if settings is None:
+        settings = json.loads((Path(__file__).resolve().parent / "config.json").read_text(encoding="utf-8"))
     # Reproducible tiny fluctuations; these are synthetic values, not sensor accuracy claims.
     noise = random.Random(sequence + 42)
     if scenario == "cycle":
@@ -21,8 +23,14 @@ def make_packet(sequence, boot_id, uptime_ms, scenario="normal", device_id="stor
         scenario = "normal" if step < 20 or step >= 60 else (
             "high-water" if step < 40 else ("sensor-fault" if step < 50 else "out-of-range")
         )
-    upstream = round((112 if scenario == "high-water" else 45) + noise.uniform(-0.5, 0.5), 1)
-    downstream = round(16 + noise.uniform(-0.3, 0.3), 1)
+    high = settings["high_water_mm"]
+    peak = high + (settings["upstream_max_mm"] - high) * .2
+    normal = min(45, settings["high_water_clear_mm"] * .5)
+    jitter = min(.5, (settings["upstream_max_mm"] - high) / 4)
+    upstream = round((peak if scenario == "high-water" else normal) + noise.uniform(-jitter, jitter), 1)
+    pond_high = settings.get("pond_high_water_mm", settings["downstream_max_mm"] * .75)
+    pond_base = pond_high + (settings["downstream_max_mm"] - pond_high) * .2 if scenario == "pond-high" else min(16, settings["downstream_max_mm"] * .2)
+    downstream = round(pond_base + noise.uniform(-.3, .3), 1)
     return {
         "schema_version": 1, "device_id": device_id, "boot_id": boot_id,
         "sequence": sequence, "uptime_ms": uptime_ms,
@@ -55,7 +63,7 @@ def main():
         print("No hardware is connected by this script. Press Control+C to stop.")
     try:
         while args.samples == 0 or sequence < args.samples:
-            packet = make_packet(sequence, boot_id, int((time.monotonic() - started) * 1000), args.scenario, settings["device_id"])
+            packet = make_packet(sequence, boot_id, int((time.monotonic() - started) * 1000), args.scenario, settings["device_id"], settings=settings)
             if args.dry_run:
                 print(json.dumps(packet, allow_nan=False))
             else:

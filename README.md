@@ -107,3 +107,7 @@ node tests/test_dashboard.js
 - Official Python macOS installers: https://www.python.org/downloads/macos/
 
 No hardware or field-performance results are claimed by this package.
+
+## Maintenance workflow
+
+Open `/incidents`. See [WORKFLOW_GUIDE.md](WORKFLOW_GUIDE.md) for setup and usage.

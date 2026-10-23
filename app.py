@@ -352,6 +352,9 @@ def create_app(mode="simulation", database_path=None, clock=None):
             headers={"Content-Disposition": f'attachment; filename="stormready_{mode}_readings.csv"'},
         )
 
+    import incident_workflow
+    incident_workflow.register(app, database, settings, profile_key)
+
     return app
 
 
