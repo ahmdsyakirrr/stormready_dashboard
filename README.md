@@ -2,8 +2,8 @@
 
 **Detect the problem. Support maintenance. Verify recovery.**
 
-This is the first local software milestone for the StormReady bench prototype.
-It runs on your Mac and accepts clearly labelled simulated readings while the
+This is the StormReady bench prototype.
+It runs and accepts clearly labelled simulated readings while the
 physical components are being sourced.
 
 **Begin with [START_HERE_MACOS.md](START_HERE_MACOS.md).**
@@ -73,8 +73,7 @@ Settings in `config.json` are demonstration values, not field thresholds:
 Edit settings while the server is stopped, then restart it. After a settings
 change, confirmation starts again with new readings. Export old data before
 starting a physical calibration session and use a separate project copy for a
-different rig profile. This milestone does not provide historical calibration
-versioning.
+different rig profile. 
 
 Valid data coverage estimates the fraction of expected sampling intervals
 containing at least one valid upstream/downstream pair. Its window is up to the
