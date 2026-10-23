@@ -1,5 +1,5 @@
 "use strict";
-// Independent location status rows; water alert episodes are managed by monitor.js.
+// Independent location status rows; water alert are managed by monitor.js.
 (function(){
   const node=id=>document.getElementById(id);
   const set=(id,value)=>{if(node(id).textContent!==String(value))node(id).textContent=String(value);};

@@ -1,6 +1,6 @@
-// StormReady milestone 2. Open THIS FILE in Arduino IDE, retaining its two .h files.
+// Open THIS FILE in Arduino IDE, retaining its two .h files.
 // Hardware: classic ESP32-WROOM dev board + two standard 5 V HC-SR04 sensors.
-// Wiring and divider placement: see START_HERE_MACOS.md and HC_SR04_Wiring.png.
+
 #include <Arduino.h>
 #include <WiFi.h>
 #include <HTTPClient.h>

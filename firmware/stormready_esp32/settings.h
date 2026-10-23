@@ -4,7 +4,6 @@
 // Echo -> 1 kohm -> 1 kohm -> junction -> ESP32 input.
 // Junction -> 1 kohm -> 1 kohm -> 1 kohm -> GND (all in SERIES).
 // Five 1 kohm resistors per sensor; ten for both sensors.
-// NEVER connect the raw Echo to the ESP32.
 
 constexpr int UPSTREAM_TRIG = 25;
 constexpr int UPSTREAM_ECHO = 26;
@@ -16,8 +15,8 @@ constexpr int SENSOR_COUNT = 2;
 
 // Leave these at zero for the dry distance test. Calibrate each mounted sensor
 // separately before trying to display water depth. See START_HERE_MACOS.md.
-constexpr float UPSTREAM_SENSOR_TO_FLOOR_MM = 300.8f;
-constexpr float DOWNSTREAM_SENSOR_TO_FLOOR_MM = 301.2f;
+constexpr float UPSTREAM_SENSOR_TO_FLOOR_MM = 296.2f;
+constexpr float DOWNSTREAM_SENSOR_TO_FLOOR_MM = 296.2f;
 // Maximum safe water depth measured from the same floor (leave freeboard).
 constexpr float UPSTREAM_USABLE_DEPTH_MM = 75.0f;
 constexpr float DOWNSTREAM_USABLE_DEPTH_MM = 80.0f;
