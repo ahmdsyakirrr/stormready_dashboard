@@ -59,10 +59,10 @@ Settings in `config.json` are demonstration values, not field thresholds:
 
 | Setting | Default | Meaning |
 | --- | --- | --- |
-| `upstream_max_mm` | 160 | Provisional upper plausible upstream level |
-| `downstream_max_mm` | 250 | Provisional upper plausible downstream level |
-| `high_water_mm` | 100 | Provisional high-water threshold |
-| `high_water_clear_mm` | 90 | Clear a confirmed high-water indication below this level |
+| `upstream_max_mm` | 75 | Provisional upper plausible upstream level |
+| `downstream_max_mm` | 80 | Provisional upper plausible downstream level |
+| `high_water_mm` | 50 | Provisional high-water threshold |
+| `high_water_clear_mm` | 40 | Clear a confirmed high-water indication below this level |
 | `high_water_hold_seconds` | 5 | Required duration of supporting high readings |
 | `max_gap_seconds` | 3 | A longer gap restarts high-water confirmation |
 | `stale_after_seconds` | 10 | No recent packets: mark current conditions unknown |
