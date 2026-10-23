@@ -1,4 +1,4 @@
-# StormReady — Milestone 1
+# StormReady
 
 **Detect the problem. Support maintenance. Verify recovery.**
 
