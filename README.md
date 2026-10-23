@@ -1,113 +1,181 @@
-# StormReady
+# StormReady 🌧️
 
-**Detect the problem. Support maintenance. Verify recovery.**
+### Detect the problem. Support maintenance. Verify recovery.
 
-This is the StormReady bench prototype.
-It runs and accepts clearly labelled simulated readings while the
-physical components are being sourced.
+**StormReady is an IoT-enabled drainage monitoring and maintenance prototype.**
 
-**Begin with [START_HERE_MACOS.md](START_HERE_MACOS.md).**
+It combines live water-level monitoring with a structured incident workflow, helping maintenance operators and supervisors identify high-water conditions, record maintenance work, compare observations and review recovery evidence.
 
-## What works in this milestone
+## Why StormReady?
 
-- Receive sensor packets through an HTTP endpoint.
-- Store the original numeric values, quality flags and receipt times in SQLite.
-- Display upstream and downstream water levels and a recent-history chart.
-- Mark missing, invalid, out-of-range and already-old measurements as unavailable.
-- Require five seconds of supporting readings for the provisional high-water check.
-- Preserve readings and high-water confirmation state after restarting the server.
-- Export all stored readings to CSV, including their source and quality.
-- Keep simulation and hardware data in separate database files.
+A water-level alert identifies a potential problem, but maintenance teams also need to know:
 
-This milestone does **not yet implement** incidents, work assignment, maintenance
-records, drainage-performance detection or verification after maintenance. Those
-are subsequent milestones. A return below the demo water-level threshold is
-not a maintenance-verification result.
+- Who is responsible for investigating it?
+- What did the inspection find?
+- What maintenance was completed?
+- Did conditions improve after the work?
+- Is there enough evidence to close the incident?
 
-## Architecture
+StormReady connects these activities in one dashboard, supporting a clearer and more accountable maintenance process.
 
-`simulator.py` sends JSON packets over HTTP to `app.py`.
-Flask stores them in SQLite and serves the HTML/CSS/JavaScript dashboard.
-The browser requests current status approximately once a second. The same packet
-contract will be used by ESP32 firmware in hardware mode.
+## How It Works
 
-All dashboard assets are included. There are no external fonts, chart libraries,
-cloud accounts, API keys or CDN requests. Internet access is required for the
-initial Python dependency installation; it is not needed for the local simulation
-after installation.
+**Observe → Flag → Assign → Inspect → Compare → Review**
 
-| File | Purpose |
+| Stage | What happens |
 | --- | --- |
-| `app.py` | Backend, validation, storage and provisional high-water check |
-| `simulator.py` | Simulated sensor source with five individual scenarios and a cycle |
-| `config.json` | Asset information and uncalibrated demonstration settings |
-| `templates/index.html` | Dashboard page |
-| `static/` | Included styles, chart logic and logo |
-| `API.md` | Exact packet format for future firmware |
-| `tests/` | Backend and optional JavaScript behaviour checks |
-| `docs/DECISIONS.md` | Current constraints, proposed physical test and next milestones |
-| `VERIFICATION.md` | Checks completed in the development environment |
+| **Observe** | Sensors measure water levels in the upstream chamber and retention pond. |
+| **Flag** | Confirmed high water triggers a noticeable alert and creates an incident. |
+| **Assign** | A supervisor assigns the incident to a maintenance operator. |
+| **Inspect** | The assigned operator records inspection findings and maintenance work. |
+| **Compare** | Controlled before-and-after observations compare water-depth drawdown under matching conditions. |
+| **Review** | A supervisor reviews the evidence and closes the case or requests further work. |
 
-## Data and thresholds
+**Acknowledging an alert or returning below a water-level threshold does not automatically close a maintenance incident.**
 
-The first run creates `data/simulation.sqlite3`. Restarting the application does
-not delete it. `python app.py --mode hardware` instead uses
-`data/hardware.sqlite3` and rejects simulator packets. Hardware mode is a future
-integration entry point, not evidence of an attached or tested device.
+## Key Features
 
-Settings in `config.json` are demonstration values, not field thresholds:
+### Live Monitoring and Alerts
 
-| Setting | Default | Meaning |
-| --- | --- | --- |
-| `upstream_max_mm` | 75 | Provisional upper plausible upstream level |
-| `downstream_max_mm` | 80 | Provisional upper plausible downstream level |
-| `high_water_mm` | 50 | Provisional high-water threshold |
-| `high_water_clear_mm` | 40 | Clear a confirmed high-water indication below this level |
-| `high_water_hold_seconds` | 5 | Required duration of supporting high readings |
-| `max_gap_seconds` | 3 | A longer gap restarts high-water confirmation |
-| `stale_after_seconds` | 10 | No recent packets: mark current conditions unknown |
-| `max_sample_age_seconds` | 3 | Reject an already-old sample as current evidence |
-| `expected_interval_seconds` | 1 | Expected device sampling interval |
-| `history_seconds` | 120 | Dashboard chart and coverage window |
+- Live upstream and retention pond water-level displays.
+- Recent-history charts and sensor connection information.
+- Independent high-water detection for both locations.
+- Alert pop-ups, persistent colour indicators and optional sound.
+- Data-quality checks for missing, invalid, stale and out-of-range readings.
 
-Edit settings while the server is stopped, then restart it. After a settings
-change, confirmation starts again with new readings. Export old data before
-starting a physical calibration session and use a separate project copy for a
-different rig profile. 
+### Incident and Maintenance Management
 
-Valid data coverage estimates the fraction of expected sampling intervals
-containing at least one valid upstream/downstream pair. Its window is up to the
-last 120 seconds, or since the first packet if the run is shorter. Missing
-intervals and invalid pairs reduce coverage; multiple packets in one interval do
-not increase it. Packet timing jitter can affect this estimate.
+- Separate supervisor and maintenance operator accounts.
+- Automatic incident creation after confirmed high water.
+- Supervisor assignment of maintenance operators.
+- Inspection findings and work-completed records.
+- Controlled 15-second before-and-after evidence captures.
+- Comparison checks for matching setup and starting water levels.
+- Supervisor closure supported by comparable improvement and fresh, safe readings.
+- Further-work requests that retain previous evidence and decisions.
 
-Receipt and estimated sampling times are stored as UTC. Dashboard times are
-shown in Malaysia time (MYT). `sample_age_ms` is reported by the sender; the backend
-cannot independently establish when a device actually measured the water.
+### Records and Exports
 
-## Checks
+- Persistent telemetry and maintenance records in SQLite.
+- Incident activity history.
+- Water-reading and incident-summary CSV exports.
+- Full incident JSON exports containing supporting evidence.
+- Separate databases for hardware and simulation modes.
 
-With the virtual environment active:
+## Prototype Architecture
+
+Water-level sensors connect to an ESP32, which sends JSON readings over Wi-Fi using HTTP. The Flask backend validates and stores the readings in SQLite, then serves the browser dashboard and incident workspace.
+
+| Component | Technology |
+| --- | --- |
+| Microcontroller | ESP32 |
+| Water-level sensing | Two ultrasonic sensors |
+| Communication | Wi-Fi and HTTP |
+| Backend | Python and Flask |
+| Database | SQLite |
+| Interface | HTML, CSS and JavaScript |
+| Firmware | Arduino-compatible C++ |
+| Development environment | macOS and Visual Studio Code |
+
+The physical model contains an upstream chamber, a retention pond, a gravity drainage connection and a manually operated submersible transfer pump.
+
+## Run the Dashboard
+
+### 1. Download and prepare the project
+
+Install Python 3 and Git, then run:
 
 ```bash
-python -m unittest discover -s tests -v
+git clone https://github.com/ahmdsyakirrr/stormready_dashboard.git
+cd stormready_dashboard
+
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -r requirements.txt
 ```
 
-Optional, only if Node.js is already installed:
+### 2. Choose a mode
+
+**Hardware mode — receive readings from the ESP32:**
+
+```bash
+python3 app.py --mode hardware --host 0.0.0.0 --port 5050
+```
+
+Configure your local copy of `firmware/stormready_esp32/settings.h` with the Wi-Fi credentials, sensor calibration and the dashboard computer’s local network IP address.
+
+The ESP32 and dashboard computer must be able to communicate over the local network.
+
+**Simulation mode — explore without connected hardware:**
+
+```bash
+python3 app.py --mode simulation --host 127.0.0.1 --port 5050
+```
+
+In another Terminal window, open the project folder and run:
+
+```bash
+source .venv/bin/activate
+python3 simulator.py --scenario normal
+```
+
+Simulation readings are labelled and stored separately from hardware readings.
+
+### 3. Open the application
+
+- **Live dashboard:** http://127.0.0.1:5050
+- **Incident workspace:** http://127.0.0.1:5050/incidents
+
+For first-time incident setup, open the incident workspace on the computer running the server. Create separate supervisor and operator accounts.
+
+See [WORKFLOW_GUIDE.md](WORKFLOW_GUIDE.md) for the complete maintenance demonstration and evidence-capture procedure.
+
+## Repository Structure
+
+| File or folder | Purpose |
+| --- | --- |
+| `app.py` | Telemetry API, validation, storage and dashboard server |
+| `pond_monitor.py` | Retention pond monitoring and supporting logic |
+| `incident_workflow.py` | Accounts, incidents, assignments, evidence and review |
+| `simulator.py` | Simulated sensor readings |
+| `config.json` | Asset information, limits and monitoring settings |
+| `templates/` | Dashboard and incident workspace pages |
+| `static/` | Styles, interface scripts and visual assets |
+| `firmware/` | ESP32 sketch and hardware configuration |
+| `tests/` | Backend and dashboard behaviour checks |
+| `API.md` | Telemetry packet documentation |
+| `WORKFLOW_GUIDE.md` | Setup and maintenance workflow instructions |
+
+## Testing
+
+Run the Python tests:
+
+```bash
+python3 -m unittest discover -s tests -v
+```
+
+If Node.js is installed, run the dashboard behaviour checks:
 
 ```bash
 node tests/test_dashboard.js
 ```
 
-## Official setup references
+## Prototype Scope
 
-- Flask installation: https://flask.palletsprojects.com/en/stable/installation/
-- Flask local server: https://flask.palletsprojects.com/en/stable/quickstart/
-- Python virtual environments: https://docs.python.org/3/library/venv.html
-- Official Python macOS installers: https://www.python.org/downloads/macos/
+StormReady is a working bench prototype for demonstration and evaluation.
 
-No hardware or field-performance results are claimed by this package.
+- It measures **water depth and water-depth drawdown**, not direct volumetric flow.
+- High pond water can indicate unusual accumulation, but does not independently prove pump failure.
+- Pump operation remains manual; the dashboard does not switch pump power.
+- Before-and-after comparisons require controlled, matching conditions.
+- Demonstration thresholds and improvement criteria require further validation before field use.
 
-## Maintenance workflow
+The application is intended for a trusted local network. Public deployment would require additional security and operational controls.
 
-Open `/incidents`. See [WORKFLOW_GUIDE.md](WORKFLOW_GUIDE.md) for setup and usage.
+## Credentials and Local Data
+
+Keep real Wi-Fi credentials, passwords, databases and backups out of GitHub. Published firmware configuration should contain placeholder credentials.
+
+## Project Goal
+
+**StormReady aims to help maintenance teams move from noticing a drainage problem to documenting action and reviewing evidence of improvement.**
