@@ -10,7 +10,7 @@ It combines live water-level monitoring with a structured incident workflow, hel
 
 [Explore the StormReady Interactive Showcase](https://ahmdsyakirrr.github.io/stormready_dashboard/)
 
-Try simulated water-level scenarios and follow the maintenance workflow from assignment to supervisor review. This browser-only demo does not connect to the physical prototype or real maintenance database.
+Explore simulated upstream and retention pond alerts, switch between demonstration supervisor and operator roles, and follow an incident from assignment through evidence capture to review. This standalone showcase uses simulated data and does not connect to the physical prototype, real accounts or maintenance database.
 
 ## Why StormReady?
 
@@ -33,8 +33,8 @@ StormReady connects these activities in one dashboard, supporting a clearer and 
 | **Observe** | Sensors measure water levels in the upstream chamber and retention pond. |
 | **Flag** | Confirmed high water triggers a noticeable alert and creates an incident. |
 | **Assign** | A supervisor assigns the incident to a maintenance operator. |
-| **Inspect** | The assigned operator records inspection findings and maintenance work. |
-| **Compare** | Controlled before-and-after observations compare water-depth drawdown under matching conditions. |
+| **Inspect** | The assigned operator captures a baseline before maintenance, then records inspection findings and completed work. |
+| **Compare** | An after-maintenance capture is compared with the baseline using matching setup labels and similar starting water depths. |
 | **Review** | A supervisor reviews the evidence and closes the case or requests further work. |
 
 **Acknowledging an alert or returning below a water-level threshold does not automatically close a maintenance incident.**
@@ -85,7 +85,7 @@ Water-level sensors connect to an ESP32, which sends JSON readings over Wi-Fi us
 
 The physical model contains an upstream chamber, a retention pond, a gravity drainage connection and a manually operated submersible transfer pump.
 
-## Run the Dashboard
+## Run the Full Application Locally
 
 ### 1. Download and prepare the project
 
@@ -145,6 +145,7 @@ See [WORKFLOW_GUIDE.md](WORKFLOW_GUIDE.md) for the complete maintenance demonstr
 | `incident_workflow.py` | Accounts, incidents, assignments, evidence and review |
 | `simulator.py` | Simulated sensor readings |
 | `config.json` | Asset information, limits and monitoring settings |
+| `docs/` | Standalone interactive showcase published through GitHub Pages |
 | `templates/` | Dashboard and incident workspace pages |
 | `static/` | Styles, interface scripts and visual assets |
 | `firmware/` | ESP32 sketch and hardware configuration |
