@@ -6,6 +6,12 @@
 
 It combines live water-level monitoring with a structured incident workflow, helping maintenance operators and supervisors identify high-water conditions, record maintenance work, compare observations and review recovery evidence.
 
+## Interactive Demo
+
+[Explore the StormReady Interactive Showcase](https://ahmdsyakirrr.github.io/stormready_dashboard/)
+
+Try simulated water-level scenarios and follow the maintenance workflow from assignment to supervisor review. This browser-only demo does not connect to the physical prototype or real maintenance database.
+
 ## Why StormReady?
 
 A water-level alert identifies a potential problem, but maintenance teams also need to know:
